@@ -1,29 +1,20 @@
-(def cljs-deps
-   '[[adzerk/boot-reload "0.4.13" :scope "test"]
-      [adzerk/boot-cljs "2.0.0"]
-      [org.clojure/clojure "1.9.0-alpha14"]
-      [org.clojure/clojurescript "1.9.293"]
-      [adzerk/cljs-console "0.1.1"]
-      [com.cognitect/transit-cljs   "0.8.239"] ; ClojureScript Wrapper for  JavaScript JSON
-      [crisptrutski/boot-cljs-test "0.3.0" :scope "test"]
-      [tolitius/boot-check "0.1.4"         :scope "test"]
-      [cljs-http "0.1.42"]
-      [com.taoensso/timbre "4.9.0-alpha1"] ; Pure Clojure/Script logging library
-      ;; ----- Repl Dependencies -------
-      [adzerk/boot-cljs-repl    "0.3.3"    :scope "test"] ;; latest release
-      [org.clojure/tools.nrepl  "0.2.12"   :scope "test"]
-])
-
-
 (set-env!
-  :source-paths #{"src"}
   :resource-paths #{"resources"}
-  :dependencies (into cljs-deps))
+  :dependencies '[[cljsjs/boot-cljsjs "0.5.2" :scope "test"]])
 
-(require
-   '[adzerk.boot-cljs    :refer [cljs]]
-   '[boot.util :as util]
-   '[adzerk.boot-reload :refer [reload]]
-   '[adzerk.boot-cljs-repl :refer [cljs-repl start-repl]])
+(require '[cljsjs.boot-cljsjs.packaging :refer :all])
+
+(def +lib-version+ "1.0.0-beta12")
+(def +version+ (str +lib-version+ "-0"))
+
+(def npm-project {'cljsjs/bcoin "bcoin"})
+
+(task-options!
+  pom {:project 'cljsjs/bcoin
+       :version +version+
+       :description "A Javascript Full-Node Implementation of Bitcoin"
+       :url "http://bcoin.io"
+       :license {"MIT"}})
+
 
 
