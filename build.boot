@@ -23,7 +23,7 @@
          (fn [fileset']
 	   (next-handler (commit! (assoc fileset :tree (merge (:tree fileset)
 	     (:tree fileset'))))))
-	handler (middleware merge-filset-handler)
+	handler (middleware merge-fileset-handler)
 	fileset (assoc fileset :tree  (reduce-kv
 	                                (fn [tree path x]
 					  (if (p x)
@@ -32,6 +32,24 @@
 					(empty (:tree fileset))
 					(:tree fileset)))]
 	(handler fileset)))))
+
+
+(defn package-part [{:keys [extern-name namespace project dependencies requires]}]
+  (with-files! (fn [x] (= extern-name (.getName (tmp-file x))))
+   (comp
+     (download :url (format "https://unpkg.com/%s@%s/dist/%s.js" (npm-project project)                   +lib-version+ (name project))
+         :checksum (:min (get checksums project)))
+     (download :url (format "https://unpkg.com/%s@%s/dist/%s.min.js"
+     (npm-project project) +lib-version+ (name project))
+         :checksum (:min (get checksums project)))
+     (sift :move {(re-pattern (format "^%.js$" (name project)))
+         (format "bcoin/%$s" (name project))})
+     (sify :include #{#"^cljsjs"})
+     (deps-cljs :name namespace :requires requires)
+     (pom :project project :dependencies (or dependencies []))
+     (show :fileset true)
+     (jar))))
+
 
 (deftask package-bcoin []
  (package-part
@@ -70,7 +88,8 @@
 	     (clojure.pprint/pprint (into {}
 	         (map (juxt identity (fn [project]
 		    {:dev (md5sum fileset (format "%s.js" (name project)))
-		     :min (md5sum fileset (format "%s.min.js" (name project))}))
+		     :min (md5sum fileset (format "%s.min.js" (name
+		     project)))}))
 		       (keys checksums)))))
 	#"bcoin" "'bcoin"))
-	fileset)))))
+	fileset))))
