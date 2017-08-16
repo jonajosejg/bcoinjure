@@ -4,8 +4,8 @@
 
 (require '[cljsjs.boot-cljsjs.packaging :refer :all])
 
-(def +lib-version+ "1.0.0-beta.12")
-(def +version+ (str +lib-version+ "-beta.12"))
+(def +lib-version+ "1.0.0-beta.14")
+(def +version+ (str +lib-version+ "-beta.14"))
 
 (def npm-project {'bcoin-org/bcoin "bcoin"})
 
